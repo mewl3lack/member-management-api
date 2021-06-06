@@ -8,7 +8,7 @@ exports.addUserController = async (req, res, next) => {
         let hash = await bcrypt.hash(password, 10);
         const User = new UserModel({username:username ,password: hash});
         let addedUser = await User.registerUser();
-        if(addedUser?.result?.ok==1){
+        if(addedUser.result.ok==1){
             res.status(201).json({
                 status:true,
                 message:"User created."
@@ -24,11 +24,11 @@ exports.loginController = async (req, res, next) => {
     // res.send('JSON.stringify(findUser)');
     if(findUser.length>0){
         try{
-            let comparePw = await bcrypt.compare(password, findUser[0]?.password);
+            let comparePw = await bcrypt.compare(password, findUser[0].password);
             if(comparePw){
                 let jwtToken = jwt.sign({
-                    username: findUser[0]?.username,
-                    userId: findUser[0]?._id
+                    username: findUser[0].username,
+                    userId: findUser[0]._id
                 },
                 "mewSecretToken",
                 {
