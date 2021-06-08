@@ -18,7 +18,13 @@ exports.addUserController = async (req, res, next) => {
 }
 
 exports.loginController = async (req, res, next) => {
-    const { username='', password} = req.body;
+    const { username, password} = req.body;
+    if(typeof username == 'undefined'||typeof password == 'undefined'){
+        res.status(400).json({
+            status:false,
+            error:'username of password is null.'
+        });
+    }
     let findUser = await UserModel.findUserByUsername({username:username});
     console.log(findUser);
     // res.send('JSON.stringify(findUser)');
