@@ -2,8 +2,9 @@ const express = require('express');
 
 const router  = express.Router()
 const {authToken} = require('../middleware/authToken');
-const { listEmployeesController} = require('../controller/memberController');
+const { listMembersController, addMembersController} = require('../controller/memberController');
 
-router.get('/getList',authToken,listEmployeesController);
+router.get('/getList',authToken,listMembersController);
+router.post('/addMember',authToken,addMembersController);
 
 module.exports = router;
