@@ -1,5 +1,9 @@
 const jwt = require('jsonwebtoken');
 const MemberModel = require('../model/memberModel');
+const AgentModal = require('../model/agentModel');
+const AgentMemberModal = require('../model/agentMemberModel');
+const axios = require('axios');
+const md5 = require('md5');
 
 exports.listMembersController = async (req, res, next)=>{
 	let query = req.body.query||req.query.query;
@@ -18,31 +22,59 @@ exports.addMembersController = async (req, res, next)=>{
 		});
 	}
 	try{
-		const Member = new MemberModel({
-	    	tel_no:tel_no,
-	    	bank_acc_vendor: bank_acc_vendor,
-	    	bank_acc_no: bank_acc_no,
-	    	first_name: first_name,
-	    	last_name: last_name,
-	    	social_source: social_source,
-	    	pin: pin,
-	    	line_id: line_id,
-	    });
-	    console.log(Member);
-	    let addedMember = await Member.addMember();
-	    if(addedMember.result.ok==1){
-	    	res.status(201).json({
-	            status:true,
-	            message:"Member created."
-	        });
-	    }
+		const checkMemberExist = await MemberModel.getMember({tel_no:tel_no});
+		if(checkMemberExist.length==0){
+			const Member = new MemberModel({
+		    	tel_no:tel_no,
+		    	bank_acc_vendor: bank_acc_vendor,
+		    	bank_acc_no: bank_acc_no,
+		    	first_name: first_name,
+		    	last_name: last_name,
+		    	social_source: social_source,
+		    	pin: pin,
+		    	line_id: line_id,
+		    });
+		    let addedMember = await Member.addMember();
+		    if(addedMember.result.ok==1){
+		    	let statusMessages = [];
+		    	let agents = await AgentModal.getAgents();
+		    	await Promise.all(
+		    		agents.map(async agent=>{
+		    			let md5Hash = md5(`${tel_no}:${pin}:${agent.agent}`);
+		    			let createdApi = await axios({
+		    				method:'POST',
+		    				url:`https://topup-sportbook88.askmebet.io/v0.1/partner/member/create/${agent.key}`,
+		    				data:{memberLoginName:tel_no,memberLoginPass:pin,signature:md5Hash}
+		    			});
+		    			if(createdApi.status!=200||createdApi.data.code!=0){
+		    				statusMessages.push(`Agent:${agent.agent} create failed.`);
+		    			}else{
+		    				let agentMember = new AgentMemberModal({
+		    					member_id:addedMember.insertedId,
+		    					agent:agent.agent,
+		    					username:createdApi.data.result.username,
+		    					password:pin
+		    				});
+		    				await agentMember.addAgentMemberModel();
+		    				statusMessages.push(`Agent:${agent.agent} create success.`);
+		    			}
+		    		})
+		    	);
+		    	res.status(201).json({
+		            status:true,
+		            message:statusMessages
+		        });
+		    }
+		}else{
+			res.status(500).json({
+				status:false,
+				error:'Telephone no. exists.'
+			});
+		}
 	}catch(err){
 		res.status(500).json({
 			status:false,
 			error:err.message
 		});
 	}
-
-	// console.log(tel_no,first_name,last_name);
-	// res.send('Connected');
 }

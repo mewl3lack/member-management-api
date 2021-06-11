@@ -5,13 +5,20 @@ const UserModel = require('../model/userModel');
 exports.addUserController = async (req, res, next) => {
     const { username, password} = req.body;
     if(username!=''&&password!=''){
-        let hash = await bcrypt.hash(password, 10);
-        const User = new UserModel({username:username ,password: hash});
-        let addedUser = await User.registerUser();
-        if(addedUser.result.ok==1){
-            res.status(201).json({
-                status:true,
-                message:"User created."
+        try{
+            let hash = await bcrypt.hash(password, 10);
+            const User = new UserModel({username:username ,password: hash});
+            let addedUser = await User.registerUser();
+            if(addedUser.result.ok==1){
+                res.status(201).json({
+                    status:true,
+                    message:"User created."
+                });
+            }
+        }catch(err){
+            res.status(500).json({
+                status:false,
+                error:err.message
             });
         }
     }
