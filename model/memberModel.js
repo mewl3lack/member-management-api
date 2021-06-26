@@ -2,6 +2,8 @@ const {MongoClient} = require('mongodb');
 const {client} = require('../db/db');
 const ObjectId = require('mongodb').ObjectId; 
 class MemberModel {
+	static collectionName = 'user_members';
+	collectionName = 'user_members';
 	constructor({tel_no='',bank_acc_vendor='',bank_acc_no='',first_name='',last_name='',social_source='',pin='',line_id='',status=1,id=0}){
 		this._id=id;
 		this.tel_no=tel_no;
@@ -19,7 +21,7 @@ class MemberModel {
 
 	async addMember(){
         await client.connect();
-        return client.db().collection('user_members').insertOne({
+        return client.db().collection(this.collectionName).insertOne({
         	'tel_no':this.tel_no,
         	'bank_acc_vendor':this.bank_acc_vendor,
         	'bank_acc_no':this.bank_acc_no,
@@ -40,12 +42,48 @@ class MemberModel {
 		if(typeof query.id !== 'undefined' && query.id!=''){
 			let objId = new ObjectId(query.id);
 			await client.connect();
-			return client.db().collection('user_members').find({_id:objId}).toArray();
+			return client.db().collection(this.collectionName).find({_id:objId}).toArray();
 		}else{
 			await client.connect();
-			return client.db().collection('user_members').find(query).toArray();
+			return client.db().collection(this.collectionName).find(query).toArray();
 		}
         
+	}
+
+	async updateMember(){
+		if(this._id!=''){
+			await client.connect();
+			let objId = new ObjectId(this._id);
+			console.log('objId',objId);
+			let updateVal = {$set:{}};
+			if(this.bank_acc_vendor!=''){
+				updateVal['$set']['bank_acc_vendor']=this.bank_acc_vendor;
+			}
+			if(this.bank_acc_no!=''){
+				updateVal['$set']['bank_acc_no']=this.bank_acc_no;
+			}
+			if(this.first_name!=''){
+				updateVal['$set']['first_name']=this.first_name;
+			}
+			if(this.last_name!=''){
+				updateVal['$set']['last_name']=this.last_name;
+			}
+			if(this.social_source!=''){
+				updateVal['$set']['social_source']=this.social_source;
+			}
+			if(this.pin!=''){
+				updateVal['$set']['pin']=this.pin;
+			}
+			if(this.line_id!=''){
+				updateVal['$set']['line_id']=this.line_id;
+			}
+			if(this.updateAt!=''){
+				updateVal['$set']['updateAt']=this.updateAt;
+			}
+	        return client.db().collection(this.collectionName).updateOne({_id:objId},updateVal);
+		}else{
+			throw 'Id empty.';
+		}
 	}
 
 }

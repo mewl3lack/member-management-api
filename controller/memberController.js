@@ -78,3 +78,57 @@ exports.addMembersController = async (req, res, next)=>{
 		});
 	}
 }
+
+exports.updateMemberController = async (req, res, next)=>{
+	let { id, bank_acc_vendor, bank_acc_no, first_name, last_name, social_source, pin, line_id} = req.body;
+	let updateVal = {};
+	if(typeof id !=='undefined'&&id!=''){
+		try{
+			updateVal['id'] = id;
+			if(typeof bank_acc_vendor !=='undefined'&&bank_acc_vendor!=''){
+				updateVal['bank_acc_vendor'] = bank_acc_vendor;
+			}
+			if(typeof bank_acc_no !=='undefined'&&bank_acc_no!=''){
+				updateVal['bank_acc_no'] = bank_acc_no;
+			}
+			if(typeof first_name !=='undefined'&&first_name!=''){
+				updateVal['first_name'] = first_name;
+			}
+			if(typeof last_name !=='undefined'&&last_name!=''){
+				updateVal['last_name'] = last_name;
+			}
+			if(typeof social_source !=='undefined'&&social_source!=''){
+				updateVal['social_source'] = social_source;
+			}
+			if(typeof pin !=='undefined'&&pin!=''){
+				updateVal['pin'] = pin;
+			}
+			if(typeof line_id !=='undefined'&&line_id!=''){
+				updateVal['line_id'] = line_id;
+			}
+			const Member = new MemberModel(updateVal);
+			let updateMember = await Member.updateMember();
+			if(updateMember.result.ok==1){
+				res.status(200).json({
+					status:true,
+					message:`${id} Updated.`
+				});
+			}else{
+				res.status(500).json({
+					status:false,
+					error:'Cannot update member.'
+				});
+			}
+		}catch(err){
+			res.status(500).json({
+				status:false,
+				error:err.message
+			});
+		}
+	}else{
+		res.status(400).json({
+			status:false,
+			error:'Id empty.'
+		});
+	}
+}
