@@ -1,5 +1,6 @@
 const {MongoClient} = require('mongodb');
 const {client} = require('../db/db');
+const ObjectId = require('mongodb').ObjectId; 
 class MemberModel {
 	constructor({tel_no='',bank_acc_vendor='',bank_acc_no='',first_name='',last_name='',social_source='',pin='',line_id='',status=1,id=0}){
 		this._id=id;
@@ -36,8 +37,15 @@ class MemberModel {
 
 	static async getMember(query=''){
 		query = query!=''?query:{};
-        await client.connect();
-		return client.db().collection('user_members').find(query).toArray();
+		if(typeof query.id !== 'undefined' && query.id!=''){
+			let objId = new ObjectId(query.id);
+			await client.connect();
+			return client.db().collection('user_members').find({_id:objId}).toArray();
+		}else{
+			await client.connect();
+			return client.db().collection('user_members').find(query).toArray();
+		}
+        
 	}
 
 }
