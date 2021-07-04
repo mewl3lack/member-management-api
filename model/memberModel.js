@@ -54,7 +54,6 @@ class MemberModel {
 		if(this._id!=''){
 			await client.connect();
 			let objId = new ObjectId(this._id);
-			console.log('objId',objId);
 			let updateVal = {$set:{}};
 			if(this.bank_acc_vendor!=''){
 				updateVal['$set']['bank_acc_vendor']=this.bank_acc_vendor;
@@ -77,9 +76,10 @@ class MemberModel {
 			if(this.line_id!=''){
 				updateVal['$set']['line_id']=this.line_id;
 			}
-			if(this.updateAt!=''){
-				updateVal['$set']['updateAt']=this.updateAt;
+			if(this.status!=''){
+				updateVal['$set']['status']=this.status;
 			}
+				updateVal['$set']['updateAt']=this.updateAt;
 	        return client.db().collection(this.collectionName).updateOne({_id:objId},updateVal);
 		}else{
 			throw 'Id empty.';
