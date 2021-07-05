@@ -10,7 +10,7 @@ const app = express();
 const user = require('./route/user')
 const member = require('./route/member')
 const transactionLog = require('./route/transactionLog')
-const { checkTransaction } = require('./job/checkTransactionJob');
+//const { checkTransaction } = require('./job/checkTransactionJob');
 app.use(bodyParser.urlencoded({extended:false}))
 
 app.use('/api/employee', user)
