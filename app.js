@@ -4,7 +4,6 @@ const bodyParser = require('body-parser')
 
 // const Arena = require('bull-arena');
 // const Bull = require('bull');
-const {TEST_QUEUE} = require('./queue/testQueue');
 
 const app = express();
 
