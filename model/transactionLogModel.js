@@ -128,6 +128,24 @@ class TransactionLogModel {
 					let memberObjId = new ObjectId($match.$match.user_member_id);
 					$match.$match.user_member_id = memberObjId;
 				}
+				if(typeof $match?.$match?.createAt !== 'undefined' && $match?.$match?.createAt!=''){
+					if(typeof $match?.$match?.createAt === 'string'){
+						$match.$match.createAt = new Date(query.createAt);
+					}else if(typeof $match.$match.createAt === 'object'){
+						for (const property in $match.$match.createAt) {
+							$match.$match.createAt[property] = new Date($match.$match.createAt[property]);
+						}
+					}
+				}
+				if(typeof $match?.$match?.updateAt !== 'undefined' && $match?.$match?.updateAt!=''){
+					if(typeof $match?.$match?.updateAt === 'string'){
+						$match.$match.updateAt = new Date(query.updateAt);
+					}else if(typeof $match.$match.updateAt === 'object'){
+						for (const property in $match.$match.updateAt) {
+							$match.$match.updateAt[property] = new Date($match.$match.updateAt[property]);
+						}
+					}
+				}
 				let queryArr = [];
 				queryArr.push($match);
 				if(typeof $lookup !== 'undefined')queryArr.push($lookup);

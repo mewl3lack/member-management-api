@@ -39,11 +39,29 @@ class MemberModel {
 
 	static async getMember(query=''){
 		query = query!=''?query:{};
-		if(typeof query.id !== 'undefined' && query.id!=''){
+		if(typeof query?.id !== 'undefined' && query?.id!=''){
 			let objId = new ObjectId(query.id);
 			await client.connect();
 			return client.db().collection(this.collectionName).find({_id:objId}).toArray();
-		}else{
+		}else{			
+			if(typeof query?.createAt !== 'undefined' && query?.createAt!=''){
+				if(typeof query?.createAt === 'string'){
+					query.createAt = new Date(query.createAt);
+				}else if(typeof query?.createAt === 'object'){
+					for (const property in query?.createAt) {
+						query.createAt[property] = new Date(query.createAt[property]);
+					}
+				}
+			}
+			if(typeof query?.updateAt !== 'undefined' && query?.updateAt!=''){
+				if(typeof query?.updateAt === 'string'){
+					query.updateAt = new Date(query.updateAt);
+				}else if(typeof query?.updateAt === 'object'){
+					for (const property in query?.updateAt) {
+						query.updateAt[property] = new Date(query.updateAt[property]);
+					}
+				}
+			}
 			await client.connect();
 			return client.db().collection(this.collectionName).find(query).toArray();
 		}
