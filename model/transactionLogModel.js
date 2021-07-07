@@ -109,11 +109,12 @@ class TransactionLogModel {
 	}
 
 	static async getTransaction(query='',limit=0){
-		query = query!=''?query:[];
+		query = query!=''?query:[{$match:{}}];
+		console.log(query);
 		let $match = query.filter(row=>row?.$match)[0];
 		let $lookup = query.filter(row=>row?.$lookup)[0];
 		try{
-			if(typeof $match.$match?.id !== 'undefined' && $match.$match?.id!=''){
+			if(typeof $match?.$match?.id !== 'undefined' && $match?.$match?.id!=''){
 				let objId = new ObjectId($match.$match.id);
 				$match.$match._id = objId;
 				let queryArr = [];
@@ -123,7 +124,7 @@ class TransactionLogModel {
 				await client.connect();
 				return client.db().collection(this.collectionName).aggregate(queryArr).toArray();
 			}else{
-				if(typeof $match.$match?.user_member_id !== 'undefined' && $match.$match?.user_member_id!=''){
+				if(typeof $match?.$match?.user_member_id !== 'undefined' && $match?.$match?.user_member_id!=''){
 					let memberObjId = new ObjectId($match.$match.user_member_id);
 					$match.$match.user_member_id = memberObjId;
 				}
