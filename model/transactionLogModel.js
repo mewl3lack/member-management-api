@@ -109,23 +109,37 @@ class TransactionLogModel {
 	}
 
 	static async getTransaction(query='',limit=0){
-		query = query!=''?query:{};
-		if(typeof query.id !== 'undefined' && query.id!=''){
-			let objId = new ObjectId(query.id);
-			await client.connect();
-			return client.db().collection(this.collectionName).find({_id:objId}).toArray();
-		}else{
-			if(typeof query.user_member_id !== 'undefined' && query.user_member_id!=''){
-				let memberObjId = new ObjectId(query.user_member_id);
-				query.user_member_id = memberObjId;
-			}
-
-			await client.connect();
-			if(limit!=0){
-				return client.db().collection(this.collectionName).find(query).limit(limit).toArray();
+		query = query!=''?query:[];
+		let $match = query.filter(row=>row?.$match)[0];
+		let $lookup = query.filter(row=>row?.$lookup)[0];
+		try{
+			if(typeof $match.$match?.id !== 'undefined' && $match.$match?.id!=''){
+				let objId = new ObjectId($match.$match.id);
+				$match.$match._id = objId;
+				let queryArr = [];
+				delete $match.$match?.id;
+				queryArr.push($match);
+				if(typeof $lookup !== 'undefined')queryArr.push($lookup);
+				await client.connect();
+				return client.db().collection(this.collectionName).aggregate(queryArr).toArray();
 			}else{
-				return client.db().collection(this.collectionName).find(query).toArray();
+				if(typeof $match.$match?.user_member_id !== 'undefined' && $match.$match?.user_member_id!=''){
+					let memberObjId = new ObjectId($match.$match.user_member_id);
+					$match.$match.user_member_id = memberObjId;
+				}
+				let queryArr = [];
+				queryArr.push($match);
+				if(typeof $lookup !== 'undefined')queryArr.push($lookup);
+				console.log(queryArr);
+				await client.connect();
+				if(limit!=0){
+					return client.db().collection(this.collectionName).aggregate(queryArr).limit(limit).toArray();
+				}else{
+					return client.db().collection(this.collectionName).aggregate(queryArr).toArray();
+				}
 			}
+		}catch(err){
+			throw err;
 		}
 	}
 

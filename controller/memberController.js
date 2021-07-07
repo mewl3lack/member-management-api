@@ -6,10 +6,20 @@ const axios = require('axios');
 const md5 = require('md5');
 
 exports.listMembersController = async (req, res, next)=>{
-	let query = req.body.query||req.query.query;
-	let queryStr = typeof query !== 'undefined'?query:'{}';
-	let result = await MemberModel.getMember(JSON.parse(queryStr));
-	res.send(result);
+	try{
+		let query = req.body.query||req.query.query;
+		let queryStr = typeof query !== 'undefined'?query:'{}';
+		let result = await MemberModel.getMember(JSON.parse(queryStr));
+		res.status(200).json({
+			status:true,
+			result:result
+		});
+	}catch(err){
+		res.status(500).json({
+			status:false,
+			error:err.message
+		});
+	}
 }
 
 exports.addMembersController = async (req, res, next)=>{
