@@ -11,6 +11,9 @@ const user = require('./route/user')
 const member = require('./route/member')
 const transactionLog = require('./route/transactionLog')
 const { checkTransaction } = require('./job/checkTransactionJob');
+
+const {client} = require('./db/db');
+
 app.use(bodyParser.urlencoded({extended:false}))
 
 app.use('/api/employee', user)
@@ -45,7 +48,8 @@ Arena(
     }
   )
 );
-
-app.listen(3001, () => {
-    console.log('running at 3001')
-})
+client.connect(() => {
+    app.listen(3001, () => {
+        console.log('running at 3001')
+    })
+});

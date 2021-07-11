@@ -48,7 +48,6 @@ class TransactionLogModel {
 	}
 
 	async addTransactionLog(){
-		await client.connect();
 		return client.db().collection(this.collectionName).insertOne({
         	'type':this.type,
         	'status':this.status,
@@ -67,7 +66,6 @@ class TransactionLogModel {
 
 	async updateTransactionLog(){
 		if(this._id!=''){
-			await client.connect();
 			let objId = new ObjectId(this._id);
 			console.log('objId',objId);
 			let updateVal = {$set:{}};
@@ -121,7 +119,6 @@ class TransactionLogModel {
 				delete $match.$match?.id;
 				queryArr.push($match);
 				if(typeof $lookup !== 'undefined')queryArr.push($lookup);
-				await client.connect();
 				return client.db().collection(this.collectionName).aggregate(queryArr).toArray();
 			}else{
 				if(typeof $match?.$match?.user_member_id !== 'undefined' && $match?.$match?.user_member_id!=''){
@@ -150,7 +147,6 @@ class TransactionLogModel {
 				queryArr.push($match);
 				if(typeof $lookup !== 'undefined')queryArr.push($lookup);
 				console.log(queryArr);
-				await client.connect();
 				if(limit!=0){
 					return client.db().collection(this.collectionName).aggregate(queryArr).limit(limit).toArray();
 				}else{

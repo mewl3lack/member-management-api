@@ -18,10 +18,8 @@ class AgentMemberModel {
 		query = query!=''?query:{};
 		if(typeof query.id !== 'undefined' && query.id!=''){
 			let objId = new ObjectId(query.id);
-			await client.connect();
 			return client.db().collection(this.collectionName).find({_id:objId}).toArray();
 		}else{
-			await client.connect();
 			return client.db().collection(this.collectionName).find(query).toArray();
 		}
         

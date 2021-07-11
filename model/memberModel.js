@@ -20,7 +20,6 @@ class MemberModel {
 	}
 
 	async addMember(){
-        await client.connect();
         return client.db().collection(this.collectionName).insertOne({
         	'tel_no':this.tel_no,
         	'bank_acc_vendor':this.bank_acc_vendor,
@@ -41,7 +40,6 @@ class MemberModel {
 		query = query!=''?query:{};
 		if(typeof query?.id !== 'undefined' && query?.id!=''){
 			let objId = new ObjectId(query.id);
-			await client.connect();
 			return client.db().collection(this.collectionName).find({_id:objId}).toArray();
 		}else{			
 			if(typeof query?.createAt !== 'undefined' && query?.createAt!=''){
@@ -62,7 +60,6 @@ class MemberModel {
 					}
 				}
 			}
-			await client.connect();
 			return client.db().collection(this.collectionName).find(query).toArray();
 		}
         
@@ -70,7 +67,6 @@ class MemberModel {
 
 	async updateMember(){
 		if(this._id!=''){
-			await client.connect();
 			let objId = new ObjectId(this._id);
 			let updateVal = {$set:{}};
 			if(this.bank_acc_vendor!=''){

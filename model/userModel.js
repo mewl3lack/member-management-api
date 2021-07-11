@@ -10,14 +10,12 @@ class UserModel {
     }
 
     async registerUser() {
-        await client.connect();
         return client.db().collection('user_employees').insertOne({'username':this.username,'password':this.password,'createAt':this.createAt,'updateAt':this.updateAt});
         // return db.execute('INSERT INTO USER (email, password, createAt, updateAt) VALUES(?, ?, ?, ?)',
         // [this.email, this.password, this.createAt, this.updateAt])
     }
 
     static async findUserByUsername ({username=''}) {
-        await client.connect();
         return client.db().collection('user_employees').find({'username':username}).toArray();
     }
 

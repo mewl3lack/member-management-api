@@ -12,7 +12,6 @@ class AgentModel {
 
 	static async getAgents(query=''){
 		query = query!=''?query:{};
-        await client.connect();
 		return client.db().collection(this.collectionName).find(query).toArray();
 	}
 }
