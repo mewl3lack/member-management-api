@@ -19,9 +19,9 @@ app.use('/api/member', member)
 
 app.use('/api/transactionLog', transactionLog)
 
-// cron.schedule('*/5 * * * * *', function() {
-//   checkTransaction();
-// });
+cron.schedule('*/5 * * * * *', function() {
+  checkTransaction();
+});
 
 
 app.use('/api',
