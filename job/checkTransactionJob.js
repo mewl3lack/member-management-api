@@ -4,7 +4,6 @@ const MemberModel = require('../model/memberModel');
 const AgentModel = require('../model/agentModel');
 const AgentMemberModel = require('../model/agentMemberModel');
 const redis = require('redis');
-const { queues } = require('../queue/testQueue');
 const { queueOpts } = require('../queue/queueRedis');
 const Queue = require('bull');
 const md5 = require('md5');
