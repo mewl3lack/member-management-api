@@ -37,6 +37,7 @@ exports.checkTransaction = async ()=>{
 		if(transactions?.status==200){
 			if(transactions.data?.success==1&&transactions.data?.result){
 				let transactionLogTop = await TransactionLogModel.getTransaction([],1); // get first transaction log.
+				console.log('transactionLogTop',transactionLogTop);
 				let transactionCursorDateTime = transactionLogTop.length!=0?transactionLogTop[0].dateTime:null;
 				let cursorDate = transactionCursorDateTime?new Date(transactionCursorDateTime):null;
 				if(cursorDate){
@@ -89,7 +90,7 @@ const depositQueueProcess = async (job,done)=>{
 
 	// console.log('job',job.data);
 
-	let checkTransactionLog = await TransactionLogModel.getTransaction({dateTime:job.data?.txnDateTime});
+	let checkTransactionLog = await TransactionLogModel.getTransaction([{$match:{dateTime:job.data?.txnDateTime}}]);
 	job.progress(15);
 	// check tran log
 
