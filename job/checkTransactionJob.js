@@ -36,7 +36,7 @@ exports.checkTransaction = async ()=>{
 		let transactions = await axios.post('https://ufa56g.com/api_scb.php?id=1&transactions',params);
 		if(transactions?.status==200){
 			if(transactions.data?.success==1&&transactions.data?.result){
-				let transactionLogTop = await TransactionLogModel.getTransaction({},1); // get first transaction log.
+				let transactionLogTop = await TransactionLogModel.getTransaction([],1); // get first transaction log.
 				let transactionCursorDateTime = transactionLogTop.length!=0?transactionLogTop[0].dateTime:null;
 				let cursorDate = transactionCursorDateTime?new Date(transactionCursorDateTime):null;
 				if(cursorDate){
@@ -67,6 +67,8 @@ exports.checkTransaction = async ()=>{
 					}
 
 				});
+			}else{
+
 			}
 		}else{
 			throw `Connection is ${transactions?.status}`;
